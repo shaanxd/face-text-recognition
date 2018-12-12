@@ -6,9 +6,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   buttonContainer: {
+    position: 'absolute',
     justifyContent : 'center',
     alignItems: 'center',
     padding: 20,
+    width: '100%',
+    bottom: 0,
   },
   previewContainer: {
     flex: 1,

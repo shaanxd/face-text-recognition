@@ -8,14 +8,14 @@
 
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
-import Camera from './src/components/camera/Camera.screen';
+import AppNavigator from './src/navigation/AppNavigation';
 
 type Props = {};
 export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Camera />
+        <AppNavigator />
       </View>
     );
   }

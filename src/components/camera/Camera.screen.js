@@ -29,11 +29,15 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
   takePicture = () => {
     if(this._camera) {
       const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true };
+      const { navigation } = this.props;
       this._camera.takePictureAsync(options)
-        .then(data => {
-          RNMLKit.deviceFaceRecognition(data.uri)
+        .then(image => {
+          RNMLKit.deviceFaceRecognition(image.uri)
             .then((data) => {
-              console.log(data);
+              navigation.navigate('ImageScreen', {
+                imageUrl: image.uri,
+                responseData: data,
+              });
             })
             .catch((error) => {
               console.log(error);
