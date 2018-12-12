@@ -1,5 +1,6 @@
 package com.mlkit.rnmodule;
 
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
@@ -61,11 +62,10 @@ public class RNMLKit extends ReactContextBaseJavaModule {
         }
     }
 
-    public WritableArray processFaceList(List<FirebaseVisionFace> firebaseVisionFaces) {
+    private WritableArray processFaceList(List<FirebaseVisionFace> firebaseVisionFaces) {
         WritableArray data = Arguments.createArray();
 
-        for(int i = 0; i < firebaseVisionFaces.size(); i++) {
-            FirebaseVisionFace mCurrentFace = firebaseVisionFaces.get(i);
+        for(FirebaseVisionFace mCurrentFace : firebaseVisionFaces) {
             WritableMap faceObj = Arguments.createMap();
 
             if(mCurrentFace.getLeftEyeOpenProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
@@ -80,19 +80,32 @@ public class RNMLKit extends ReactContextBaseJavaModule {
                 faceObj.putDouble("smilingProbability", mCurrentFace.getSmilingProbability());
             }
 
-            List<FirebaseVisionPoint> mAllContours = mCurrentFace.getContour(FirebaseVisionFaceContour.ALL_POINTS).getPoints();
-            WritableArray mContourArray = Arguments.createArray();
+            if(mCurrentFace.getContour(FirebaseVisionFaceContour.ALL_POINTS).getPoints().size() != 0) {
+                WritableArray mContourArray = Arguments.createArray();
 
-            for(int j = 0; j <mAllContours.size(); j++) {
-                FirebaseVisionPoint mCurrentContour = mAllContours.get(j);
-                WritableMap mContourObj = Arguments.createMap();
-                mContourObj.putDouble("X", mCurrentContour.getX());
-                mContourObj.putDouble("Y", mCurrentContour.getY());
+                List<FirebaseVisionPoint> mFaceContours = mCurrentFace.getContour(FirebaseVisionFaceContour.ALL_POINTS).getPoints();
 
-                mContourArray.pushMap(mContourObj);
+                for (FirebaseVisionPoint mPoint : mFaceContours) {
+                    WritableMap mPointMap = Arguments.createMap();
+                    mPointMap.putDouble("x", mPoint.getX());
+                    mPointMap.putDouble("y", mPoint.getY());
+
+                    mContourArray.pushMap(mPointMap);
+                }
+
+                faceObj.putArray("contourPoints", mContourArray);
             }
 
-            faceObj.putArray("contourPoints", mContourArray);
+            Rect mBoundingBox = mCurrentFace.getBoundingBox();
+
+            WritableMap mBoundingObj = Arguments.createMap();
+
+            mBoundingObj.putInt("top", mBoundingBox.top);
+            mBoundingObj.putInt("bottom", mBoundingBox.bottom);
+            mBoundingObj.putInt("left", mBoundingBox.left);
+            mBoundingObj.putInt("right", mBoundingBox.right);
+
+            faceObj.putMap("boundingBox", mBoundingObj);
             data.pushMap(faceObj);
         }
 
@@ -115,7 +128,7 @@ public class RNMLKit extends ReactContextBaseJavaModule {
                             .setContourMode(FirebaseVisionFaceDetectorOptions.ALL_CONTOURS)
                             .build();
 
-            this.faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(options);
+            this.faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(realTimeOpts);
         }
         return faceDetector;
     }
