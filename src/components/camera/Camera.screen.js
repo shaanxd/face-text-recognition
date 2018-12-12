@@ -28,7 +28,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
 
   takePicture = () => {
     if(this._camera) {
-      const options = { quality: 0.5, base64: true, forceUpOrientation: true };
+      const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true };
       this._camera.takePictureAsync(options)
         .then(data => {
           RNMLKit.deviceFaceRecognition(data.uri)
@@ -51,7 +51,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
           <RNCamera
             ref={this.getRef}
             style = {styles.previewContainer}
-            type={RNCamera.Constants.Type.back}
+            type={RNCamera.Constants.Type.front}
             flashMode={RNCamera.Constants.FlashMode.off}
             permissionDialogTitle={'Permission to access camera.'}
             permissionDialogMessage={'DetectApp requires your permission to access the camera.'}

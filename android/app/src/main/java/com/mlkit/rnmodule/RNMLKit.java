@@ -15,7 +15,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.common.FirebaseVisionPoint;
 import com.google.firebase.ml.vision.face.FirebaseVisionFace;
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 
@@ -62,11 +64,35 @@ public class RNMLKit extends ReactContextBaseJavaModule {
     public WritableArray processFaceList(List<FirebaseVisionFace> firebaseVisionFaces) {
         WritableArray data = Arguments.createArray();
 
-        for(int i = 0; i < firebaseVisionFaces.size(); i ++) {
+        for(int i = 0; i < firebaseVisionFaces.size(); i++) {
             FirebaseVisionFace mCurrentFace = firebaseVisionFaces.get(i);
             WritableMap faceObj = Arguments.createMap();
 
-            faceObj.putInt("Face Number", i);
+            if(mCurrentFace.getLeftEyeOpenProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
+                faceObj.putDouble("leftEyeOpenProbability", mCurrentFace.getLeftEyeOpenProbability());
+            }
+
+            if(mCurrentFace.getRightEyeOpenProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
+                faceObj.putDouble("rightEyeOpenProbability", mCurrentFace.getRightEyeOpenProbability());
+            }
+
+            if(mCurrentFace.getSmilingProbability() != FirebaseVisionFace.UNCOMPUTED_PROBABILITY) {
+                faceObj.putDouble("smilingProbability", mCurrentFace.getSmilingProbability());
+            }
+
+            List<FirebaseVisionPoint> mAllContours = mCurrentFace.getContour(FirebaseVisionFaceContour.ALL_POINTS).getPoints();
+            WritableArray mContourArray = Arguments.createArray();
+
+            for(int j = 0; j <mAllContours.size(); j++) {
+                FirebaseVisionPoint mCurrentContour = mAllContours.get(j);
+                WritableMap mContourObj = Arguments.createMap();
+                mContourObj.putDouble("X", mCurrentContour.getX());
+                mContourObj.putDouble("Y", mCurrentContour.getY());
+
+                mContourArray.pushMap(mContourObj);
+            }
+
+            faceObj.putArray("contourPoints", mContourArray);
             data.pushMap(faceObj);
         }
 
@@ -76,12 +102,18 @@ public class RNMLKit extends ReactContextBaseJavaModule {
     private FirebaseVisionFaceDetector getFaceDetectorInstance() {
         if (this.faceDetector == null) {
             FirebaseVisionFaceDetectorOptions options = new FirebaseVisionFaceDetectorOptions.Builder()
-                    .setClassificationMode(FirebaseVisionFaceDetectorOptions.ACCURATE)
+                    .setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST)
                     .setLandmarkMode(FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS)
                     .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
-                    .setMinFaceSize(0.5f)
+                    .setMinFaceSize(0.15f)
                     .enableTracking()
                     .build();
+
+            FirebaseVisionFaceDetectorOptions realTimeOpts =
+                    new FirebaseVisionFaceDetectorOptions.Builder()
+                            .setPerformanceMode(FirebaseVisionFaceDetectorOptions.FAST)
+                            .setContourMode(FirebaseVisionFaceDetectorOptions.ALL_CONTOURS)
+                            .build();
 
             this.faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(options);
         }
