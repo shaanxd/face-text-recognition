@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, Dimensions } from 'react-native';
 import PropTypes from 'prop-types';
 import type { Element as ReactElement } from 'react';
 import { RNCamera } from 'react-native-camera';
@@ -28,7 +28,8 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
 
   takePicture = () => {
     if(this._camera) {
-      const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, width: 360, height:240 };
+      const {height, width} = Dimensions.get('window');
+      const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, width: width, height:height };
       const { navigation } = this.props;
       this._camera.takePictureAsync(options)
         .then(image => {
