@@ -28,7 +28,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
 
   takePicture = () => {
     if(this._camera) {
-      const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true };
+      const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, width: 360, height:240 };
       const { navigation } = this.props;
       this._camera.takePictureAsync(options)
         .then(image => {
