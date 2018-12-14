@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import {View, ImageBackground, Dimensions} from 'react-native';
+import {View, ImageBackground } from 'react-native';
 import PropTypes from 'prop-types';
 import type {Element as ReactElement} from 'react';
 import Svg,{G, Circle} from 'react-native-svg';
@@ -24,7 +24,6 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
 
   renderFaceDetails = (): ReactElement<any> => {
     const { responseData } = this.state;
-    const {height, width} = Dimensions.get('window');
     const facesToRender = responseData.map((faces) => {
       const { boundingBox: { right, left, top, bottom }, contourPoints } = faces;
       const contoursToRender = contourPoints.map((contourPoint) => {
@@ -47,8 +46,8 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
     return(
       <View style={styles.overlayContainer}>
         <Svg
-          width={width}
-          height={height}
+          width={480}
+          height={640}
           style={{borderWidth: 2, borderColor: 'white'}}
         >
             {facesToRender}

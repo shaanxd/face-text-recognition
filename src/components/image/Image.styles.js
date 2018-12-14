@@ -1,6 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
-
-const {height, width} = Dimensions.get('window');
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -8,8 +6,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   imageView: {
-    height: height,
-    width: width,
+    height: 640,
+    width: 480,
   },
   overlayContainer: {
     flex: 1,
