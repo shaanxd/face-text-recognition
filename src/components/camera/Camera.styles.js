@@ -8,28 +8,50 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
     justifyContent : 'center',
-    alignItems: 'center',z
-    padding: 20,
+    alignItems: 'center',
     width: '100%',
     bottom: 0,
+    flexDirection: 'row',
   },
   previewContainer: {
     flex: 1,
   },
   captureButton: {
-    height: 50,
-    width: 50,
+    height: 75,
+    width: 75,
     backgroundColor: 'white',
-    borderRadius: 25,
+    borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonInnerView: {
-    height: 40,
-    width: 40,
+    height: 50,
+    width: 50,
     borderWidth: 2,
     borderRadius: 25,
     borderColor: 'grey',
+  },
+  cameraChangeButton: {
+    height: 50,
+    width: 50,
+    backgroundColor: 'transparent',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+  },
+  smallButtonContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  middleButtonContainer: {
+    padding: 30,
+  },
+  cameraChangeIcon: {
+    height: 30,
+    width: 30,
+    tintColor: 'white',
   }
 });
 

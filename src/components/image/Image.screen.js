@@ -17,13 +17,13 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
     super(props);
     const { navigation } = this.props;
     this.state = {
-        imageUrl: navigation.getParam('imageUrl', ''),
+        capturedImage: navigation.getParam('capturedImage', {}),
         responseData: navigation.getParam('responseData', {}),
     }
   }
 
   renderFaceDetails = (): ReactElement<any> => {
-    const { responseData } = this.state;
+    const { responseData, capturedImage } = this.state;
     const facesToRender = responseData.map((faces) => {
       const { boundingBox: { right, left, top, bottom }, contourPoints } = faces;
       const contoursToRender = contourPoints.map((contourPoint) => {
@@ -46,9 +46,9 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
     return(
       <View style={styles.overlayContainer}>
         <Svg
-          width={480}
-          height={640}
-          style={{borderWidth: 2, borderColor: 'white'}}
+          width={'100%'}
+          height={'100%'}
+          viewBox={`0 0 ${capturedImage.width} ${capturedImage.height}`}
         >
             {facesToRender}
         </Svg>
@@ -57,14 +57,25 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
   }
 
   renderContent = (): ReactElement<any> => {
-    const { imageUrl, responseData } = this.state;
+    const { capturedImage, responseData } = this.state;
     const renderFaceContent = this.renderFaceDetails();
     console.log(responseData);
     return (
       <View style={styles.container}>
         <ImageBackground
-            source={{ uri: imageUrl, isStatic:true }}
-            style={styles.imageView}
+            resizeMode={'contain'}
+            source={{ uri: capturedImage.uri, isStatic:true }}
+            style=
+            {[
+              { 
+                aspectRatio:(capturedImage.width/capturedImage.height),
+                width: '100%',
+                height: undefined,
+                maxWidth: capturedImage.width,
+                maxHeight: capturedImage.height
+              },
+              styles.imageView
+            ]}
         >
           {renderFaceContent}
         </ImageBackground>

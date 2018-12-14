@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, Image } from 'react-native';
 import PropTypes from 'prop-types';
 import type { Element as ReactElement } from 'react';
 import { RNCamera } from 'react-native-camera';
@@ -11,11 +11,16 @@ import styles from './Camera.styles';
 type CameraProps = {}; // TODO: Add props type here
 type CameraState = {}; // TODO: Add state type here
 
+const cameraChangeIcon = require('../../images/camera_switch.png');
+
 class Camera extends React.PureComponent<CameraProps, CameraState> {
   static defaultProps: any
 
   constructor(props: CameraProps) {
     super(props);
+    this.state = {
+      isFrontCamera: false,
+    }
   }
 
   getRef = (ref) => {
@@ -24,6 +29,11 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
 
   barcodesDetected = ({ barcodes }) => {
     console.log(barcodes);
+  }
+
+  handleCameraChange = () => {
+    const { isFrontCamera } = this.state;
+    this.setState({isFrontCamera: !isFrontCamera});
   }
 
   takePicture = () => {
@@ -36,7 +46,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
           RNMLKit.deviceFaceRecognition(image.uri)
             .then((data) => {
               navigation.navigate('ImageScreen', {
-                imageUrl: image.uri,
+                capturedImage: image,
                 responseData: data,
               });
             })
@@ -51,24 +61,47 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
   }
 
   renderContent = (): ReactElement<any> => {
+    const { Constants: { Type: { front, back } } } = RNCamera;
+    const { isFrontCamera } = this.state;
+    const cameraType = isFrontCamera ? front : back;
     return (
       <View style={styles.container}>
           <RNCamera
             ref={this.getRef}
             style = {styles.previewContainer}
-            type={RNCamera.Constants.Type.front}
+            type={cameraType}
             flashMode={RNCamera.Constants.FlashMode.off}
             permissionDialogTitle={'Permission to access camera.'}
             permissionDialogMessage={'DetectApp requires your permission to access the camera.'}
             onGoogleVisionBarcodesDetected={this.barcodesDetected}
           />
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-                onPress={this.takePicture}
-                style = {styles.captureButton}
-            >
-              <View style={styles.buttonInnerView} />
-            </TouchableOpacity>
+            <View style={styles.smallButtonContainer}>
+              <TouchableOpacity
+                  onPress={this.handleCameraChange}
+                  style = {styles.cameraChangeButton}
+              >
+                <Image
+                  source={cameraChangeIcon}
+                  style={styles.cameraChangeIcon}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.middleButtonContainer}>
+              <TouchableOpacity
+                  onPress={this.takePicture}
+                  style = {styles.captureButton}
+              >
+                <View style={styles.buttonInnerView} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.smallButtonContainer}>
+              <TouchableOpacity
+                  style = {styles.cameraChangeButton}
+              >
+                <View style={styles.buttonInnerView} />
+              </TouchableOpacity>
+            </View>
           </View>
       </View>
     );
