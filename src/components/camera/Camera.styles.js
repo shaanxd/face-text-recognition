@@ -30,6 +30,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 25,
     borderColor: 'grey',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cameraChangeButton: {
     height: 50,

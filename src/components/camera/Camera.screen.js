@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { View, TouchableOpacity, Text, Image } from 'react-native';
+import { View, TouchableOpacity, Text, Image, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 import type { Element as ReactElement } from 'react';
 import { RNCamera } from 'react-native-camera';
@@ -20,6 +20,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
     super(props);
     this.state = {
       isFrontCamera: false,
+      isTakingPicture: false,
     }
   }
 
@@ -40,21 +41,24 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
     if(this._camera) {
       const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, width: 480, height:360 };
       const { navigation } = this.props;
+      this.setState({isTakingPicture: true});
       this._camera.takePictureAsync(options)
         .then(image => {
-          console.log(image);
           RNMLKit.deviceFaceRecognition(image.uri)
             .then((data) => {
+              this.setState({isTakingPicture: false});
               navigation.navigate('ImageScreen', {
                 capturedImage: image,
                 responseData: data,
               });
             })
-            .catch((error) => {
+            .catch((error) => {              
+              this.setState({isTakingPicture: false});
               console.log(error);
             })
         })
         .catch(error => {
+          this.setState({isTakingPicture: false});
           console.log(error);
         });
     }
@@ -62,7 +66,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
 
   renderContent = (): ReactElement<any> => {
     const { Constants: { Type: { front, back } } } = RNCamera;
-    const { isFrontCamera } = this.state;
+    const { isFrontCamera, isTakingPicture } = this.state;
     const cameraType = isFrontCamera ? front : back;
     return (
       <View style={styles.container}>
@@ -89,10 +93,15 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
             </View>
             <View style={styles.middleButtonContainer}>
               <TouchableOpacity
+                  disabled={isTakingPicture}
                   onPress={this.takePicture}
                   style = {styles.captureButton}
               >
-                <View style={styles.buttonInnerView} />
+                <View style={styles.buttonInnerView}>
+                  {isTakingPicture &&
+                    <ActivityIndicator size={'large'} />
+                  }
+                </View>
               </TouchableOpacity>
             </View>
             <View style={styles.smallButtonContainer}>
