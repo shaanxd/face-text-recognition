@@ -70,15 +70,18 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
     const cameraType = isFrontCamera ? front : back;
     return (
       <View style={styles.container}>
-          <RNCamera
-            ref={this.getRef}
-            style = {styles.previewContainer}
-            type={cameraType}
-            flashMode={RNCamera.Constants.FlashMode.off}
-            permissionDialogTitle={'Permission to access camera.'}
-            permissionDialogMessage={'DetectApp requires your permission to access the camera.'}
-            onGoogleVisionBarcodesDetected={this.barcodesDetected}
-          />
+          <View style={styles.cameraContainer}>
+            <RNCamera
+              autoFocus={RNCamera.Constants.AutoFocus.off}
+              ref={this.getRef}
+              style = {styles.previewContainer}
+              type={cameraType}
+              flashMode={RNCamera.Constants.FlashMode.off}
+              permissionDialogTitle={'Permission to access camera.'}
+              permissionDialogMessage={'DetectApp requires your permission to access the camera.'}
+              onGoogleVisionBarcodesDetected={this.barcodesDetected}
+            />
+          </View>
           <View style={styles.buttonContainer}>
             <View style={styles.smallButtonContainer}>
               <TouchableOpacity
@@ -108,7 +111,10 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
               <TouchableOpacity
                   style = {styles.cameraChangeButton}
               >
-                <View style={styles.buttonInnerView} />
+                <Image
+                  source={cameraChangeIcon}
+                  style={styles.cameraChangeIcon}
+                />
               </TouchableOpacity>
             </View>
           </View>

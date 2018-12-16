@@ -1,4 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
+const height = width / (3/4);
 
 const styles = StyleSheet.create({
   container: {
@@ -6,19 +9,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   buttonContainer: {
-    position: 'absolute',
     justifyContent : 'center',
     alignItems: 'center',
     width: '100%',
-    bottom: 0,
     flexDirection: 'row',
   },
-  previewContainer: {
+  cameraContainer: {
     flex: 1,
+    justifyContent : 'center',
+    alignItems: 'center',
+  },
+  previewContainer: {
+    width: width,
+    height: height,
   },
   captureButton: {
-    height: 75,
-    width: 75,
+    height: 60,
+    width: 60,
     backgroundColor: 'white',
     borderRadius: 50,
     justifyContent: 'center',
@@ -34,21 +41,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cameraChangeButton: {
-    height: 50,
-    width: 50,
+    height: 40,
+    width: 40,
     backgroundColor: 'transparent',
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'white',
   },
   smallButtonContainer: {
     flex: 1,
     alignItems: 'center',
   },
   middleButtonContainer: {
-    padding: 30,
+    padding: 20,
   },
   cameraChangeIcon: {
     height: 30,
