@@ -59,7 +59,6 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
   renderContent = (): ReactElement<any> => {
     const { capturedImage, responseData } = this.state;
     const renderFaceContent = this.renderFaceDetails();
-    console.log(responseData);
     return (
       <View style={styles.container}>
         <ImageBackground
@@ -71,8 +70,6 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
                 aspectRatio:(capturedImage.width/capturedImage.height),
                 width: '100%',
                 height: undefined,
-                maxWidth: capturedImage.width,
-                maxHeight: capturedImage.height
               },
               styles.imageView
             ]}

@@ -19,7 +19,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
   constructor(props: CameraProps) {
     super(props);
     this.state = {
-      isFrontCamera: false,
+      isFrontCamera: true,
       isTakingPicture: false,
     }
   }
@@ -39,13 +39,15 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
 
   takePicture = () => {
     if(this._camera) {
-      const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, width: 480, height:360 };
+      const options = { quality: 0.5, forceUpOrientation: true, fixOrientation: true, width: 360, height:360 };
       const { navigation } = this.props;
       this.setState({isTakingPicture: true});
       this._camera.takePictureAsync(options)
         .then(image => {
+          console.log(image);
           RNMLKit.deviceFaceRecognition(image.uri)
             .then((data) => {
+              console.log(data);
               this.setState({isTakingPicture: false});
               navigation.navigate('ImageScreen', {
                 capturedImage: image,
