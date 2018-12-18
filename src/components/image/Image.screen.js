@@ -3,7 +3,7 @@ import React from 'react';
 import {View, ImageBackground } from 'react-native';
 import PropTypes from 'prop-types';
 import type {Element as ReactElement} from 'react';
-import Svg,{G, Circle} from 'react-native-svg';
+import Svg,{G, Circle, Polygon} from 'react-native-svg';
 
 import styles from './Image.styles';
 
@@ -27,6 +27,7 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
     const facesToRender = responseData.map((faces) => {
       const { boundingBox: { right, left, top, bottom }, contourPoints } = faces;
       const contoursToRender = contourPoints.map((contourPoint) => {
+
         return (
           <Circle
             cx={contourPoint.x}
@@ -37,12 +38,20 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
           />
         )
       })
+
       return (
           <G>
+            <Polygon
+                points={`${left},${top} ${right},${top} ${right},${bottom} ${left},${bottom}`}
+                fill="transparent"
+                stroke="red"
+                strokeWidth="1"
+            />
             {contoursToRender}
           </G>
       )
     });
+
     return(
       <View style={styles.overlayContainer}>
         <Svg

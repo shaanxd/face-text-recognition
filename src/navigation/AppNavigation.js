@@ -8,9 +8,6 @@ const AppNavigator = createStackNavigator(
         FaceRecognitionScreen: {
             screen: FaceRecognition,
         },
-        CameraScreen: {
-            screen: Camera,
-        },
         ImageScreen: {
             screen: Image,
         },
