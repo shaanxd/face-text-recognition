@@ -21,6 +21,8 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceContour;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
+import com.google.firebase.ml.vision.text.FirebaseVisionText;
+import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,10 +31,38 @@ public class RNMLKit extends ReactContextBaseJavaModule {
 
     private final ReactApplicationContext reactContext;
     private FirebaseVisionFaceDetector faceDetector;
+    private FirebaseVisionTextRecognizer textRecognizer;
 
     public RNMLKit(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
+    }
+
+    @ReactMethod
+    public void deviceTextRecognition(String fileUri, final Promise promise) {
+        try {
+            FirebaseVisionImage mImage = FirebaseVisionImage.fromFilePath(this.reactContext, android.net.Uri.parse(fileUri));
+            FirebaseVisionTextRecognizer detector = this.getTextDetectorInstance();
+            Task<FirebaseVisionText> result =
+                    textRecognizer.processImage(mImage)
+                    .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                        @Override
+                        public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                            promise.resolve((processText(firebaseVisionText)));
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                            promise.reject(e);
+                        }
+                    });
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
     }
 
     @ReactMethod
@@ -112,6 +142,42 @@ public class RNMLKit extends ReactContextBaseJavaModule {
         return data;
     }
 
+    private WritableArray processText (FirebaseVisionText firebaseVisionText) {
+        WritableArray mData = Arguments.createArray();
+        List<FirebaseVisionText.TextBlock> mTextBlocks = firebaseVisionText.getTextBlocks();
+        WritableArray mBlocksArray = Arguments.createArray();
+
+        for(FirebaseVisionText.TextBlock mBlock : mTextBlocks) {
+            WritableMap mBlockMap = Arguments.createMap();
+
+            List<FirebaseVisionText.Line> mTextLines = mBlock.getLines();
+            WritableArray mLinesArray = Arguments.createArray();
+
+            for(FirebaseVisionText.Line mLine : mTextLines) {
+                WritableMap mLineMap = Arguments.createMap();
+
+                List<FirebaseVisionText.Element> mTextElements = mLine.getElements();
+                WritableArray mElementArray = Arguments.createArray();
+
+                for(FirebaseVisionText.Element mElement : mTextElements) {
+                    WritableMap mElementMap = Arguments.createMap();
+                    mElementMap.putString("elementText", mElement.getText());
+                    mElementArray.pushMap(mElementMap);
+                }
+
+                mLineMap.putArray("lineElements", mElementArray);
+                mLineMap.putString("lineText", mLine.getText());
+                mLinesArray.pushMap(mLineMap);
+            }
+
+            mBlockMap.putArray("blockLines", mLinesArray);
+            mBlockMap.putString("blockText", mBlock.getText());
+            mData.pushMap(mBlockMap);
+        }
+
+        return mData;
+    }
+
     private FirebaseVisionFaceDetector getFaceDetectorInstance() {
         if (this.faceDetector == null) {
             FirebaseVisionFaceDetectorOptions options = new FirebaseVisionFaceDetectorOptions.Builder()
@@ -131,6 +197,13 @@ public class RNMLKit extends ReactContextBaseJavaModule {
             this.faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(realTimeOpts);
         }
         return faceDetector;
+    }
+
+    private FirebaseVisionTextRecognizer getTextDetectorInstance() {
+        if (this.textRecognizer == null) {
+            this.textRecognizer = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+        }
+        return textRecognizer;
     }
 
     @Override
