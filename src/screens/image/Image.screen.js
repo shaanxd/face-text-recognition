@@ -3,8 +3,9 @@ import React from 'react';
 import {View, ImageBackground } from 'react-native';
 import PropTypes from 'prop-types';
 import type {Element as ReactElement} from 'react';
-import Svg,{G, Circle, Polygon} from 'react-native-svg';
+import Svg,{G, Circle, Polygon, Text} from 'react-native-svg';
 
+import {FACE_RECOGNITION, TEXT_RECOGNITION} from '../../types/RecognitionTypes';
 import styles from './Image.styles';
 
 type ImageProps = {}; // TODO: Add props type here
@@ -23,9 +24,9 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
   }
 
   renderFaceDetails = (): ReactElement<any> => {
-    const { responseData, capturedImage } = this.state;
+    const {responseData, capturedImage} = this.state;
     const facesToRender = responseData.map((faces) => {
-      const { boundingBox: { right, left, top, bottom }, contourPoints } = faces;
+      const {boundingBox: {right, left, top, bottom}, contourPoints} = faces;
       const contoursToRender = contourPoints.map((contourPoint) => {
 
         return (
@@ -65,9 +66,48 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
     )
   }
 
+  renderTextContent = (): ReactElement<any> => {
+    const {responseData, capturedImage} = this.state;
+    const blocksToRender = responseData.map((block) => {
+      const {blockLines} = block;
+      const linesToRender = blockLines.map((line) => {
+        const {lineElements} = line;
+        const elementsToRender = lineElements.map((element) => {
+          return (
+            <Text
+              fill="purple"
+              stroke="none"
+              fontSize="10"
+              textAnchor="middle"
+            >
+              {element.elementText}
+            </Text>
+          )
+        });
+        
+        return elementsToRender;
+      });
+      return linesToRender;
+    });
+
+    return(
+      <View style={styles.overlayContainer}>
+        <Svg
+          width={'100%'}
+          height={'100%'}
+          viewBox={`0 0 ${capturedImage.width} ${capturedImage.height}`}
+        >
+            {blocksToRender}
+        </Svg>
+      </View>
+    )
+  }
+
   renderContent = (): ReactElement<any> => {
     const { capturedImage, responseData } = this.state;
-    const renderFaceContent = this.renderFaceDetails();
+    const {navigation} = this.props;
+    const captureType = navigation.getParam('captureType',FACE_RECOGNITION);
+    const renderImage = captureType === FACE_RECOGNITION ? this.renderFaceDetails() : this.renderTextContent();
     return (
       <View style={styles.container}>
         <ImageBackground
@@ -83,7 +123,7 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
               styles.imageView
             ]}
         >
-          {renderFaceContent}
+          {renderImage}
         </ImageBackground>
       </View>
     );

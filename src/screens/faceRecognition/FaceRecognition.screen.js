@@ -3,20 +3,16 @@ import React from 'react';
 import {View} from 'react-native';
 import PropTypes from 'prop-types';
 import type {Element as ReactElement} from 'react';
-import Camera from '../camera/Camera.screen.js';
+
+import {FACE_RECOGNITION} from '../../types/RecognitionTypes';
+import {Camera} from '../../components';
 import RNMLKit from '../../modules/RNMLKit';
+import {faceOptions} from '../../constants/CameraOptions';
 
 import styles from './FaceRecognition.styles';
 
 type FaceRecognitionProps = {}; // TODO: Add props type here
 type FaceRecognitionState = {}; // TODO: Add state type here
-
-const cameraOptions = {
-    quality: 0.5,
-    forceUpOrientation: true,
-    fixOrientation: true,
-    width: 480
-};
 
 class FaceRecognition extends React.PureComponent<FaceRecognitionProps, FaceRecognitionState> {
   static defaultProps: any
@@ -35,9 +31,10 @@ class FaceRecognition extends React.PureComponent<FaceRecognitionProps, FaceReco
     return (
       <View style={styles.container}>
         <Camera
-            cameraOptions={cameraOptions}
+            cameraOptions={faceOptions}
             onCapture={this.takePicture}
-            navigation={navigation} 
+            navigation={navigation}
+            captureType={FACE_RECOGNITION} 
         />
       </View>
     );

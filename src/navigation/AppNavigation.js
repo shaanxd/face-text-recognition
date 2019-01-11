@@ -1,12 +1,17 @@
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator, createAppContainer, createBottomTabNavigator } from 'react-navigation';
 import Camera from '../components/camera/Camera.screen';
-import Image from '../components/image/Image.screen';
-import FaceRecognition from '../components/faceRecognition/FaceRecognition.screen.js';
+import {Home, Image, FaceRecognition, TextRecognition} from '../screens';
 
 const AppNavigator = createStackNavigator(
     {
+        HomeScreen: {
+            screen: Home,
+        },
         FaceRecognitionScreen: {
             screen: FaceRecognition,
+        },
+        TextRecognitionScreen: {
+            screen: TextRecognition,
         },
         ImageScreen: {
             screen: Image,

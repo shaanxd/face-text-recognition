@@ -4,11 +4,15 @@ import { View, TouchableOpacity, Text, Image, ActivityIndicator } from 'react-na
 import PropTypes from 'prop-types';
 import type { Element as ReactElement } from 'react';
 import { RNCamera } from 'react-native-camera';
-import RNMLKit from '../../modules/RNMLKit';
 
 import styles from './Camera.styles';
 
-type CameraProps = {}; // TODO: Add props type here
+type CameraProps = {
+  navigation: {},
+  onCapture: () => {},
+  cameraOptions: {},
+  captureType: string,
+}; // TODO: Add props type here
 type CameraState = {}; // TODO: Add state type here
 
 const cameraChangeIcon = require('../../images/camera_switch.png');
@@ -35,16 +39,18 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
 
   takePicture = () => {
     if(this._camera) {
-      const { navigation, onCapture, cameraOptions } = this.props;
+      const { navigation, onCapture, cameraOptions, captureType } = this.props;
       this.setState({isTakingPicture: true});
       this._camera.takePictureAsync(cameraOptions)
         .then(image => {
           onCapture(image)
             .then((data) => {
+              console.log(data);
               this.setState({isTakingPicture: false});
               navigation.navigate('ImageScreen', {
                 capturedImage: image,
                 responseData: data,
+                captureType: captureType,
               });
             })
             .catch((error) => {
@@ -67,7 +73,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
       <View style={styles.container}>
           <View style={styles.cameraContainer}>
             <RNCamera
-              autoFocus={RNCamera.Constants.AutoFocus.off}
+              autoFocus={RNCamera.Constants.AutoFocus.on}
               ref={this.getRef}
               style = {styles.previewContainer}
               type={cameraType}
@@ -123,7 +129,12 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
   }
 }
 
-Camera.propTypes = {};
+Camera.propTypes = {
+  navigation: PropTypes.object.isRequired,
+  onCapture: PropTypes.func.isRequired,
+  cameraOptions: PropTypes.object.isRequired,
+  captureType: PropTypes.string.isRequired,
+};
 
 Camera.defaultProps = {};
 
