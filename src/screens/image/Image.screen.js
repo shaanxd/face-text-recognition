@@ -42,13 +42,13 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
 
       return (
           <G>
-            <Polygon
+            {/* <Polygon
                 points={`${left},${top} ${right},${top} ${right},${bottom} ${left},${bottom}`}
                 fill="transparent"
                 stroke="red"
                 strokeWidth="1"
             />
-            {contoursToRender}
+            {contoursToRender */}}
           </G>
       )
     });
@@ -68,26 +68,32 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
 
   renderTextContent = (): ReactElement<any> => {
     const {responseData, capturedImage} = this.state;
-    const blocksToRender = responseData.map((block) => {
-      const {blockLines} = block;
-      const linesToRender = blockLines.map((line) => {
-        const {lineElements} = line;
-        const elementsToRender = lineElements.map((element) => {
-          return (
-            <Text
-              fill="purple"
-              stroke="none"
-              fontSize="10"
-              textAnchor="middle"
-            >
-              {element.elementText}
-            </Text>
-          )
-        });
-        
-        return elementsToRender;
-      });
-      return linesToRender;
+    const elementsToRender = responseData.map((element) => {
+      const {left, top, right, bottom, elementText} = element;
+      const y = ((bottom - top)/2) + top;
+      const x = ((right - left)/2) + left;
+
+      return (
+        <G>
+          {/* <Polygon
+              points={`${left},${top} ${right},${top} ${right},${bottom} ${left},${bottom}`}
+              fill="transparent"
+              stroke="yellow"
+              strokeWidth="2"
+          >
+          </Polygon> */}
+          <Text
+            fill="yellow"
+            stroke="none"
+            fontSize="15"
+            x={x}
+            y={y}
+            textAnchor="middle"
+          >
+            {elementText}
+          </Text>
+        </G>
+      )
     });
 
     return(
@@ -97,7 +103,9 @@ class Image extends React.PureComponent<ImageProps, ImageState> {
           height={'100%'}
           viewBox={`0 0 ${capturedImage.width} ${capturedImage.height}`}
         >
-            {blocksToRender}
+          <G>
+            {elementsToRender}
+          </G>
         </Svg>
       </View>
     )

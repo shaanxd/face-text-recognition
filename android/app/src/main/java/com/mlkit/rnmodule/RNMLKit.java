@@ -148,31 +148,21 @@ public class RNMLKit extends ReactContextBaseJavaModule {
         WritableArray mBlocksArray = Arguments.createArray();
 
         for(FirebaseVisionText.TextBlock mBlock : mTextBlocks) {
-            WritableMap mBlockMap = Arguments.createMap();
-
             List<FirebaseVisionText.Line> mTextLines = mBlock.getLines();
-            WritableArray mLinesArray = Arguments.createArray();
 
             for(FirebaseVisionText.Line mLine : mTextLines) {
-                WritableMap mLineMap = Arguments.createMap();
-
                 List<FirebaseVisionText.Element> mTextElements = mLine.getElements();
-                WritableArray mElementArray = Arguments.createArray();
 
                 for(FirebaseVisionText.Element mElement : mTextElements) {
                     WritableMap mElementMap = Arguments.createMap();
                     mElementMap.putString("elementText", mElement.getText());
-                    mElementArray.pushMap(mElementMap);
+                    mElementMap.putInt("left", mElement.getBoundingBox().left);
+                    mElementMap.putInt("top", mElement.getBoundingBox().top);
+                    mElementMap.putInt("right", mElement.getBoundingBox().right);
+                    mElementMap.putInt("bottom", mElement.getBoundingBox().bottom);
+                    mData.pushMap(mElementMap);
                 }
-
-                mLineMap.putArray("lineElements", mElementArray);
-                mLineMap.putString("lineText", mLine.getText());
-                mLinesArray.pushMap(mLineMap);
             }
-
-            mBlockMap.putArray("blockLines", mLinesArray);
-            mBlockMap.putString("blockText", mBlock.getText());
-            mData.pushMap(mBlockMap);
         }
 
         return mData;

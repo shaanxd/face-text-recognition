@@ -23,7 +23,7 @@ class Camera extends React.PureComponent<CameraProps, CameraState> {
   constructor(props: CameraProps) {
     super(props);
     this.state = {
-      isFrontCamera: true,
+      isFrontCamera: false,
       isTakingPicture: false,
     }
   }
